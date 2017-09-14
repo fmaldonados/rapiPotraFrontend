@@ -196,55 +196,15 @@
                 <div id="sidebar-chat-tab" class="col s12 sidebar-messages right-sidebar-panel active">
                     <p class="right-sidebar-heading">CHAT LIST</p>
                     <div class="chat-list">
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image.png" alt="" class="circle"></div>
+                        <a href="javascript:void(0)" class="chat-message" >
+                            <div class="chat-item" v-for = "item in chat">
+                                <div class="chat-item-image"><img v-bind:src="item.imagen" alt="" class="circle"></div>
                                 <div class="chat-item-info">
-                                    <p class="chat-name">John Doe</p> <span class="chat-message">Hello</span></div>
+                                    <p class="chat-name">{{item.nombre}} {{item.apellido}} </p> <span class="chat-message">{{item.mensaje.contenido}}</span></div>
                             </div>
                         </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image-1.png" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Tom Simpson</p> <span class="chat-message">How are you?</span></div>
-                            </div>
-                        </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image-3.jpg" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Alan Grey</p> <span class="chat-message">Call me later</span></div>
-                            </div>
-                        </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image.png" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Michael Fisher</p> <span class="chat-message">How's it going?</span></div>
-                            </div>
-                        </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image-1.png" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Amily Lee</p> <span class="chat-message">We're good</span></div>
-                            </div>
-                        </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image.png" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Sandra Smith</p> <span class="chat-message">See you later!</span></div>
-                            </div>
-                        </a>
-                        <a href="javascript:void(0)" class="chat-message">
-                            <div class="chat-item">
-                                <div class="chat-item-image"><img src="assets/images/profile-image-3.jpg" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">Sandra Smith</p> <span class="chat-message">Can we meet?</span></div>
-                            </div>
-                        </a>
+                        
+                        
                     </div>
                     <div class="chat-sidebar-options"><a href="#" class="left"><i class="material-icons">search</i></a></div>
                 </div>
@@ -314,17 +274,46 @@
 </template>
 
 <script>
+    import userService from '../services/user'
+    import conversacionService from '../services/conversacion'
+    import eventoService from '../services/evento'
     export default {
-      name: 'app',
-      data () {
-        return {
-            //sock: {},
-            //socks : [],
-            //msg: 'Welcome to Your Vue.js App'
-            user:{nombre:"Felix",apellido:"Maldonado",nombreUsuario:"felix_em",imagen:"https://upload.wikimedia.org/wikipedia/en/3/3b/Dark_Side_of_the_Moon.png"},
-            chat:{}
-        }
-  }
+        name: 'app',
+        data () {
+            return {
+                user:{},
+                chat:[]
+            }
+        },
+        methods:{
+            profileInfo(){
+                localStorage.rapiPotra ="felix_em";
+                //console.log(localStorage.rapiPotra);
+                userService.getUsers("users?nombreUsuario="+localStorage.rapiPotra).then(response=>{
+                    //console.log(response.data[0]);
+                    this.user = response.data[0];
+                }); 
+                var chatItems=[];
+                conversacionService.getConversacion("?user1="+localStorage.rapiPotra).then(response=>{
+                    response.data.forEach(function(element) {
+                        userService.getUsers("users?nombreUsuario="+element.user2).then(response=>{
+                            var chatItem={
+                                nombre: response.data[0].nombre,
+                                apellido: response.data[0].apellido,
+                                imagen: response.data[0].imagen,
+                                mensaje: element.mensajes[element.mensajes.length-1]
+                                };
+                                chatItems.push(chatItem);
+                        });
+                    });
+                    this.chat = chatItems;
+                }); 
+            }
+            
+        } ,
+        beforeMount(){
+            this.profileInfo();
+        },
     }
 </script>
   
