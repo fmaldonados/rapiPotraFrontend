@@ -12,7 +12,7 @@ export default{
 	createSock(newconversacion){
 		return Vue.http.post(url,newConversacion);
 	},
-    modifySock(params,newconversacion){
+    modifySock(params,newConversacion){
 		return Vue.http.put(url+params,newConversacion);
 	}
 }
