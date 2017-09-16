@@ -5,6 +5,12 @@ import App from './App'
 import VueRouter from 'vue-router'
 import Hello from './components/Hello.vue'
 import Pastrana from './components/Pastrana.vue'
+import socketio from 'socket.io-client';
+import VueSocketIO from 'vue-socket.io';
+
+export const SocketInstance = socketio('http://localhost:8000');
+
+Vue.use(VueSocketIO, SocketInstance)
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)

@@ -197,10 +197,10 @@
                     <p class="right-sidebar-heading">CHAT LIST</p>
                     <div class="chat-list">
                         <a href="javascript:void(0)" class="chat-message" >
-                            <div class="chat-item" v-for = "item in chat">
-                                <div class="chat-item-image"><img v-bind:src="item.imagen" alt="" class="circle"></div>
-                                <div class="chat-item-info">
-                                    <p class="chat-name">{{item.nombre}} {{item.apellido}} </p> <span class="chat-message">{{item.mensaje.contenido}}</span></div>
+                            <div  v-bind:id="item.nombreUsuario" v-on:click="pushToChat(item.nombreUsuario)" class="chat-item" v-for = "item in chat">
+                                <div   class="chat-item-image"><img v-bind:src="item.imagen" alt="" class="circle"></div>
+                                <div  class="chat-item-info">
+                                    <p  class="chat-name">{{item.nombre}} {{item.apellido}} </p> <span  class="chat-message">{{item.mensaje.contenido}}</span></div>
                             </div>
                         </a>
                         
@@ -210,36 +210,18 @@
                 </div>
             </div>
         </aside>
-        <aside id="chat-messages" class="side-nav white right-aligned" style="width: 320px; transform: translateX(100%);">
-            <p class="sidebar-chat-name">Tom Simpson<a href="#" data-activates="chat-messages" class="chat-message-link"><i class="material-icons">keyboard_arrow_right</i></a></p>
-            <div class="messages-container">
-                <div class="message-wrapper them">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-1.png" alt="" class="circle"></div>
-                    <div class="text-wrapper">Lorem Ipsum</div>
-                </div>
-                <div class="message-wrapper me">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-3.jpg" alt="" class="circle"></div>
-                    <div class="text-wrapper">Integer in faucibus diam?</div>
-                </div>
-                <div class="message-wrapper them">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-1.png" alt="" class="circle"></div>
-                    <div class="text-wrapper">Vivamus quis neque volutpat, hendrerit justo vitae, suscipit dui</div>
-                </div>
-                <div class="message-wrapper me">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-3.jpg" alt="" class="circle"></div>
-                    <div class="text-wrapper">Suspendisse condimentum tortor et lorem pretium</div>
-                </div>
-                <div class="message-wrapper them">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-1.png" alt="" class="circle"></div>
-                    <div class="text-wrapper">dolore eu fugiat nulla pariatur</div>
-                </div>
-                <div class="message-wrapper me">
-                    <div class="circle-wrapper"><img src="assets/images/profile-image-3.jpg" alt="" class="circle"></div>
-                    <div class="text-wrapper">Duis maximus leo eget massa porta</div>
+        <aside id="chat-messages" class="side-nav white right-aligned" style="width: 320px; transform: translateX(100%);">   
+            <p class="sidebar-chat-name">{{messages.nombre}} {{messages.apellido}}<a href="#" data-activates="chat-messages" class="chat-message-link"><i class="material-icons">keyboard_arrow_right</i></a></p>
+            <div class="messages-container" >
+                <div v-for = "item in messages.messages">
+                    <div class="message-wrapper "  v-bind:class="item.de">
+                        <div class="circle-wrapper"><img src="https://cdn-images-1.medium.com/max/1200/1*yeAO-nwsAqnzr7k-zoDkoQ.png" alt="" class="circle"></div>
+                        <div class="text-wrapper">{{item.contenido}}</div>
+                    </div>    
                 </div>
             </div>
             <div class="message-compose-box">
-                <div class="input-field"><input placeholder="Write message" id="message_compose" type="text"></div>
+                <div class="input-field"><input v-on:keyup.enter="enviarMensaje" v-model="msg" placeholder="Write message" id="message_compose" type="text"></div>
             </div>
         </aside>
         <aside id="slide-out" class="side-nav white fixed">
@@ -282,7 +264,19 @@
         data () {
             return {
                 user:{},
-                chat:[]
+                messages:{},
+                chat:[],
+                msg:"",
+                isConnected: false,
+                socketMessage: ''
+            }
+        },
+        sockets: {
+            connect: function(){
+                console.log('2')
+            },
+            getMessage: function(val){
+                console.log(val);
             }
         },
         methods:{
@@ -298,6 +292,7 @@
                     response.data.forEach(function(element) {
                         userService.getUsers("users?nombreUsuario="+element.user2).then(response=>{
                             var chatItem={
+                                nombreUsuario:response.data[0].nombreUsuario,
                                 nombre: response.data[0].nombre,
                                 apellido: response.data[0].apellido,
                                 imagen: response.data[0].imagen,
@@ -308,7 +303,46 @@
                     });
                     this.chat = chatItems;
                 }); 
-            }
+            },
+            pushToChat(id){
+                conversacionService.getConversacion("?user1="+localStorage.rapiPotra+"&user2="+id).then(response=>{
+                    //console.log(response.data[0]);
+                    userService.getUsers("users?nombreUsuario="+response.data[0].user2).then(response2=>{
+                        
+                        this.messages= {nombreUsuario:response2.data[0].nombreUsuario ,nombre: response2.data[0].nombre, imagen:response2.data[0].imagen,apellido:response2.data[0].apellido, messages: response.data[0].mensajes};
+                        this.messages.messages.forEach(function(element){
+                            if(element.de == localStorage.rapiPotra){
+                                element.de="me"
+                            }else{
+                                element.de="them"
+                            }
+                        });
+                        
+                    }); 
+                });
+            },
+            enviarMensaje(){
+                this.messages.messages.push({de:"me",contenido:this.msg});
+                this.msg="";
+                var newMessage={mensajes:[]};
+                var otroUsuario= this.messages.nombreUsuario
+                this.messages.messages.forEach(function(element){
+                    if(element.de == "me"){
+                        newMessage.mensajes.push({de:localStorage.rapiPotra,contenido:element.contenido});
+                    }else{
+                        newMessage.mensajes.push({de:otroUsuario,contenido:element.contenido});
+                    }
+                });
+                this.chat.forEach(function(element){
+                    if(element.nombreUsuario==otroUsuario){
+                        element.mensaje= newMessage.mensajes[newMessage.mensajes.length-1]; 
+                    }
+                });
+                var hilo = this.$socket
+                conversacionService.modifySock("?user1="+localStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
+                    hilo.emit('getMessage', {user1:localStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                });
+            },
             
         } ,
         beforeMount(){
