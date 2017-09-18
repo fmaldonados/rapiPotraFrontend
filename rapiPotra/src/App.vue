@@ -1,6 +1,94 @@
 <template>
   <div id="app">
-    <div class="mn-content fixed-sidebar">
+    <div v-if="scope===''">
+        <div v-if="!signIn">
+            <div style="background-image:url('static/images/soccer.gif'); height:662px; opacity: 0.9;">
+                <div class="mn-content valign-wrapper">
+                <main class="mn-inner container" >
+                    <div class="valign">
+                          <div class="row">
+                              <div class="col s12 m6 l4 offset-l4 offset-m3">
+                                  <div class="card white darken-1">
+                                    <div class="input-field col s12 center">
+                                        <img src="static/images/balon.png" alt="" class="circle responsive-img valign profile-image-login">
+                                        <p class="center login-form-text">Rapi Potra</p>
+                                      </div>
+                                      <div class="card-content ">
+                                          <span class="card-title">Login</span>
+                                           <div class="row">
+                                               <form class="col s12">
+                                                   <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Usuario</label>
+                                                   </div>
+                                                   <div class="input-field col s12">
+                                                       <input id="password" type="password" class="validate">
+                                                       <label for="password">Contraseña</label>
+                                                   </div>
+                                                   <div class="col s12 right-align m-t-sm">
+                                                       <router-link to= '/sign-in'><a v-on:click= "signIn=true" class="waves-effect waves-grey btn-flat">sign up</a></router-link>
+                                                       <a v-on:click = "login()" class="waves-effect waves-light btn teal">sign in</a>
+                                                   </div>
+                                               </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+        <div v-else-if="signIn">
+            <div style="background-image:url('static/images/soccer-iloveimg-resized.gif'); height:690px; opacity: 0.9;">
+                <div class="mn-content valign-wrapper">
+                <main class="mn-inner container" >
+                    <div class="valign">
+                          <div class="row">
+                              <div class="col s12 m6 l4 offset-l4 offset-m3">
+                                  <div class="card white darken-1">
+                                    <div class="input-field col s12 center">
+                                        <img src="static/images/balon.png" alt="" class="circle responsive-img valign profile-image-login">
+                                        <p class="center login-form-text">Rapi Potra</p>
+                                      </div>
+                                      <div class="card-content ">
+                                          <span class="card-title">Sign In</span>
+                                           <div class="row">
+                                               <form class="col s12">
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Nombre</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Apellido</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Usuario</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="password" type="password" class="validate">
+                                                       <label for="password">Contraseña</label>
+                                                    </div>
+                                                    <div class="col s12 right-align m-t-sm">
+                                                       <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">sign in</a></router-link>
+                                                       <a class="waves-effect waves-light btn teal">sign up</a>
+                                                    </div>
+                                               </form>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+        </div>
+    <div v-else class="mn-content fixed-sidebar">
         <header class="mn-header navbar-fixed">
             <nav class="black">
                 <div class="nav-wrapper row">
@@ -244,8 +332,8 @@
                     <router-link to='/configuracion'>
                     <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">settings</i>Configuracion</a></li>
                     </router-link>
-                    <router-link to='/logout'>
-                    <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">exit_to_app</i>Cerrar Sesion</a></li>
+                    <router-link to='/login'>
+                    <li class="no-padding"><a @click="scope=''" class="waves-effect waves-grey active"><i class="material-icons">exit_to_app</i>Cerrar Sesion</a></li>
                     </router-link>
                 </ul>
             </div>
@@ -263,12 +351,19 @@
         name: 'app',
         data () {
             return {
-                user:{},
+                user:{
+                    username: '',
+                    password: '',
+                },
                 messages:{},
                 chat:[],
                 msg:"",
+                scope: '',
                 isConnected: false,
-                socketMessage: ''
+                socketMessage: '',
+                sesiones: [],
+                usuarios: [],
+                signIn: false
             }
         },
         sockets: {
@@ -280,15 +375,46 @@
             }
         },
         methods:{
+            login(){
+                var bcrypt = require('bcryptjs');
+                this.usuarios = [];
+                userService.getUsers().then(response => {
+                  this.usuarios = response.body;
+                  for(let i = 0; i < this.usuarios.length; i++){
+                    if(this.username === this.usuarios[i].username){
+                      bcrypt.compare(this.password,this.usuarios[i].password,this.verificar);
+                    }else{
+                      console.log('Usuario incorrecto');
+                    }
+                  }
+                }, response => {
+                  alert('Error');
+                });
+            },
+            verificar(err,res){
+                if(res){
+                  for(let i = 0; i < this.usuarios.length; i++){
+                    if(this.usuarios[i].username === this.username){
+                      this.scope = 'regular';
+                      localStorage.setItem('scope', 'regular');
+                    }
+                  }
+                }else{
+                  console.log('Contraseña incorrecta');
+                }
+            },
+            cambioSesion(){
+                this.scope = '';
+                localStorage.setItem('scope', '');
+            },
             profileInfo(){
-                localStorage.rapiPotra ="felix_em";
-                //console.log(localStorage.rapiPotra);
-                userService.getUsers("users?nombreUsuario="+localStorage.rapiPotra).then(response=>{
+                localStorage.username="felix_em";
+                userService.getUsers("users?nombreUsuario="+localStorage.username).then(response=>{
                     //console.log(response.data[0]);
                     this.user = response.data[0];
                 }); 
                 var chatItems=[];
-                conversacionService.getConversacion("?user1="+localStorage.rapiPotra).then(response=>{
+                conversacionService.getConversacion("?user1="+localStorage.username).then(response=>{
                     response.data.forEach(function(element) {
                         userService.getUsers("users?nombreUsuario="+element.user2).then(response=>{
                             var chatItem={
@@ -305,13 +431,13 @@
                 }); 
             },
             pushToChat(id){
-                conversacionService.getConversacion("?user1="+localStorage.rapiPotra+"&user2="+id).then(response=>{
+                conversacionService.getConversacion("?user1="+localStorage.username+"&user2="+id).then(response=>{
                     //console.log(response.data[0]);
                     userService.getUsers("users?nombreUsuario="+response.data[0].user2).then(response2=>{
                         
                         this.messages= {nombreUsuario:response2.data[0].nombreUsuario ,nombre: response2.data[0].nombre, imagen:response2.data[0].imagen,apellido:response2.data[0].apellido, messages: response.data[0].mensajes};
                         this.messages.messages.forEach(function(element){
-                            if(element.de == localStorage.rapiPotra){
+                            if(element.de == localStorage.username){
                                 element.de="me"
                             }else{
                                 element.de="them"
@@ -328,7 +454,7 @@
                 var otroUsuario= this.messages.nombreUsuario
                 this.messages.messages.forEach(function(element){
                     if(element.de == "me"){
-                        newMessage.mensajes.push({de:localStorage.rapiPotra,contenido:element.contenido});
+                        newMessage.mensajes.push({de:localStorage.username,contenido:element.contenido});
                     }else{
                         newMessage.mensajes.push({de:otroUsuario,contenido:element.contenido});
                     }
@@ -339,15 +465,26 @@
                     }
                 });
                 var hilo = this.$socket
-                conversacionService.modifySock("?user1="+localStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
-                    hilo.emit('getMessage', {user1:localStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                conversacionService.modifySock("?user1="+localStorage.username+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
+                    hilo.emit('getMessage', {user1:localStorage.username,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
             },
             
-        } ,
+        },
         beforeMount(){
             this.profileInfo();
         },
+         beforeCreate(){
+            userService.getUsers().then(response =>{
+            for(let i = 0; i < response.body.length; i++){
+                this.usuarios.push(response.body[i]);
+            }
+            this.scope = '';
+            localStorage.setItem('scope','');
+            }, response =>{
+            alert('Bienvenido!');
+        });
+  }
     }
 </script>
   
