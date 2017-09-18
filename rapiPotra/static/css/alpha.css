@@ -1604,9 +1604,11 @@ li.active .nav-drop-icon {
 
 .middle-content {
     padding-top: 25px;
-    padding-right: 25px;
+    padding-right: 50px;
+    padding-left: 25px;
     float: left;
     width: calc(100% - 220px)!important;
+    margin-bottom: 50px;
 }
 
 .mn-inner {
@@ -1615,7 +1617,7 @@ li.active .nav-drop-icon {
 }
 
 .mn-inner.hidden-fixed-sidebar {
-    padding-left: 25px!important;
+    padding-left: 245px!important;
 }
 
 .mn-inner.inner-active-sidebar {

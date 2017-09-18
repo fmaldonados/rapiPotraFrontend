@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
-import Hello from './components/Hello.vue'
+import inicio from './components/inicio.vue'
 import Pastrana from './components/Pastrana.vue'
 import socketio from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io';
@@ -18,7 +18,7 @@ const router = new VueRouter({
     routes:[{
         path:'/inicio',
         name: 'inicio',
-        component: Hello
+        component: inicio
     },{
         path:'/eventos',
         name: 'eventos',
