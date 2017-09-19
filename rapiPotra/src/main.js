@@ -9,9 +9,9 @@ import Login from './components/Login.vue'
 import socketio from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io';
 
-export const SocketInstance = socketio('http://localhost:8000');
+//export const SocketInstance = socketio('http://localhost:8000');
 
-Vue.use(VueSocketIO, SocketInstance)
+//Vue.use(VueSocketIO, SocketInstance)
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
