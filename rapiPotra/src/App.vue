@@ -56,6 +56,33 @@
                                           <span class="card-title">Sign In</span>
                                            <div class="row">
                                                <form class="col s12">
+                                                    <p>Seleccione</p>
+                                                    <form action="#">
+                                                        <p>
+                                                            <input name="group1" type="radio" id="test1" />
+                                                            <label for="test1">Local</label>
+                                                        </p>
+                                                        <p>
+                                                            <input name="group1" type="radio" id="test2" />
+                                                            <label for="test2">Usuario</label>
+                                                        </p>
+                                                    </form>
+                                                    <div v-show="local">
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Nombre Local</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Usuario</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="password" type="password" class="validate">
+                                                       <label for="password">Contraseña</label>
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <div v-show="!local">
                                                     <div class="input-field col s12">
                                                        <input id="username" type="text" class="validate">
                                                        <label for="username">Nombre</label>
@@ -72,20 +99,10 @@
                                                        <input id="password" type="password" class="validate">
                                                        <label for="password">Contraseña</label>
                                                     </div>
-                                                    <p>Seleccione</p>
-                                                    <form action="#">
-                                                        <p>
-                                                            <input name="group1" type="radio" id="test1" />
-                                                            <label for="test1">Local</label>
-                                                        </p>
-                                                        <p>
-                                                            <input name="group1" type="radio" id="test2" />
-                                                            <label for="test2">Usuario</label>
-                                                        </p>
-                                                    </form>
+                                                    </div>
                                                     <div class="col s12 right-align m-t-sm">
                                                        <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">LogIn</a></router-link>
-                                                       <a class="waves-effect waves-light btn teal">sign up</a>
+                                                       <a class="waves-effect waves-light btn teal" v-bind:class="signInButton">sign up</a>
                                                     </div>
                                                </form>
                                           </div>
@@ -378,7 +395,9 @@
                 isConnected: false,
                 socketMessage: '',
                 scope:sessionStorage.scope,
-                signIn:false
+                signIn:false,
+                signInButton:'disabled',
+                local:false
             }
         },
         // sockets: {
@@ -483,7 +502,9 @@
                 console.log(val);
             });
             console.log(sessionStorage.rapiPotra);
-            this.profileInfo();
+            if(sessionStorage.rapiPotra){
+                this.profileInfo();
+            }
         }
     }
 </script>
