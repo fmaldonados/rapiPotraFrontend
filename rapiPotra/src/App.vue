@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div v-show="scope===''">
+    <div v-show="!scope">
         <div v-show="!signIn">
             <div style="background-image:url('static/images/soccer.gif'); height:662px; opacity: 0.9;">
                 <div class="mn-content valign-wrapper">
@@ -377,7 +377,7 @@
                 msg:"",
                 isConnected: false,
                 socketMessage: '',
-                scope:'',
+                scope:sessionStorage.scope,
                 signIn:false
             }
         },
@@ -393,27 +393,30 @@
             login(){
 	            var body={nombreUsuario:this.username,password:this.password};
                 authService.login(body).then(response=>{
-                    localStorage.rapiPotra= response.body.nombreUsuario;
-                    localStorage.scope=response.body.scope[0];
+                    sessionStorage.rapiPotra= response.body.nombreUsuario;
+                    sessionStorage.scope=response.body.scope[0];
                     this.scope=response.body.scope[0];
-                    console.log(localStorage.scope);
+                    console.log(sessionStorage.scope);
+                    console.log(sessionStorage.rapiPotra);
                     this.profileInfo();
                 });
             },
             logout(){
-                this.scope='';
-                localStorage.rapiPotra='';
-                console.log(localStorage.rapiPotra);
+                sessionStorage.removeItem('rapiPotra');
+                sessionStorage.removeItem('scope');
+                this.scope=sessionStorage.scope;
+                console.log(sessionStorage.scope);
+                console.log(sessionStorage.rapiPotra);
+                console.log(this.scope);
             },
             profileInfo(){
                 
-                console.log(localStorage.rapiPotra);
-                userService.getUsers("users?nombreUsuario="+localStorage.rapiPotra).then(response=>{
+                userService.getUsers("users?nombreUsuario="+sessionStorage.rapiPotra).then(response=>{
                     //console.log(response.data[0]);
                     this.user = response.data[0];
                 }); 
                 var chatItems=[];
-                conversacionService.getConversacion("?user1="+localStorage.rapiPotra).then(response=>{
+                conversacionService.getConversacion("?user1="+sessionStorage.rapiPotra).then(response=>{
                     response.data.forEach(function(element) {
                         userService.getUsers("users?nombreUsuario="+element.user2).then(response=>{
                             var chatItem={
@@ -430,13 +433,13 @@
                 }); 
             },
             pushToChat(id){
-                conversacionService.getConversacion("?user1="+localStorage.rapiPotra+"&user2="+id).then(response=>{
+                conversacionService.getConversacion("?user1="+sessionStorage.rapiPotra+"&user2="+id).then(response=>{
                     //console.log(response.data[0]);
                     userService.getUsers("users?nombreUsuario="+response.data[0].user2).then(response2=>{
                         
                         this.messages= {nombreUsuario:response2.data[0].nombreUsuario ,nombre: response2.data[0].nombre, imagen:response2.data[0].imagen,apellido:response2.data[0].apellido, messages: response.data[0].mensajes};
                         this.messages.messages.forEach(function(element){
-                            if(element.de == localStorage.rapiPotra){
+                            if(element.de == sessionStorage.rapiPotra){
                                 element.de="me"
                             }else{
                                 element.de="them"
@@ -453,7 +456,7 @@
                 var otroUsuario= this.messages.nombreUsuario
                 this.messages.messages.forEach(function(element){
                     if(element.de == "me"){
-                        newMessage.mensajes.push({de:localStorage.rapiPotra,contenido:element.contenido});
+                        newMessage.mensajes.push({de:sessionStorage.rapiPotra,contenido:element.contenido});
                     }else{
                         newMessage.mensajes.push({de:otroUsuario,contenido:element.contenido});
                     }
@@ -464,11 +467,11 @@
                     }
                 });
                 const socket = io('http://localhost:8000');
-                conversacionService.modifySock("?user1="+localStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
-                    socket.emit('getMessage', {user1:localStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                conversacionService.modifySock("?user1="+sessionStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
+                    socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
-                conversacionService.modifySock("?user2="+localStorage.rapiPotra+"&user1="+this.messages.nombreUsuario,newMessage).then(function(){
-                    socket.emit('getMessage', {user1:localStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                conversacionService.modifySock("?user2="+sessionStorage.rapiPotra+"&user1="+this.messages.nombreUsuario,newMessage).then(function(){
+                    socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
             },
             
@@ -479,6 +482,8 @@
             socket.on('getMessage',function(val){
                 console.log(val);
             });
+            console.log(sessionStorage.rapiPotra);
+            this.profileInfo();
         }
     }
 </script>
