@@ -3,7 +3,7 @@ import VueResource from 'vue-resource'
 
 Vue.use(VueResource);
 
-var url='http://localhost:8000/conversacion';
+var url='https://rapipotra.herokuapp.com/';
 export default{
 	getConversacion(params){
         console.log(url+params);
