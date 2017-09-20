@@ -59,11 +59,11 @@
                                                     <p>Seleccione</p>
                                                     <form action="#">
                                                         <p>
-                                                            <input name="group1" type="radio" id="test1" />
+                                                            <input v-on:click="localBool" name="group1" type="radio" id="test1" checked/>
                                                             <label for="test1">Local</label>
                                                         </p>
                                                         <p>
-                                                            <input name="group1" type="radio" id="test2" />
+                                                            <input v-on:click="usuarioBool" name="group1" type="radio" id="test2" />
                                                             <label for="test2">Usuario</label>
                                                         </p>
                                                     </form>
@@ -102,7 +102,7 @@
                                                     </div>
                                                     <div class="col s12 right-align m-t-sm">
                                                        <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">LogIn</a></router-link>
-                                                       <a class="waves-effect waves-light btn teal" v-bind:class="signInButton">sign up</a>
+                                                       <a class="waves-effect waves-light btn teal">sign up</a>
                                                     </div>
                                                </form>
                                           </div>
@@ -396,8 +396,8 @@
                 socketMessage: '',
                 scope:sessionStorage.scope,
                 signIn:false,
-                signInButton:'disabled',
-                local:false
+                
+                local:true
             }
         },
         // sockets: {
@@ -412,13 +412,31 @@
             login(){
 	            var body={nombreUsuario:this.username,password:this.password};
                 authService.login(body).then(response=>{
-                    sessionStorage.rapiPotra= response.body.nombreUsuario;
-                    sessionStorage.scope=response.body.scope[0];
-                    this.scope=response.body.scope[0];
-                    console.log(sessionStorage.scope);
-                    console.log(sessionStorage.rapiPotra);
-                    this.profileInfo();
+                    if(response.body !='usuario no existe'){
+                        sessionStorage.rapiPotra= response.body.nombreUsuario;
+                        sessionStorage.scope=response.body.scope[0];
+                        this.scope=response.body.scope[0];
+                        console.log(sessionStorage.scope);
+                        console.log(sessionStorage.rapiPotra);
+                        this.profileInfo();
+                    }else{
+                        authService.loginLocal(body).then(response=>{
+                            if(response.body !='usuario no existe'){
+                                // sessionStorage.rapiPotra= response.body.nombreUsuario;
+                                // sessionStorage.scope=response.body.scope[0];
+                                // this.scope=response.body.scope[0];
+                                // console.log(sessionStorage.scope);
+                                // console.log(sessionStorage.rapiPotra);
+                                // this.profileInfo();
+                                console.log("entro a locales");
+                            }else{
+                                console.log("No existe en ninguno");
+                            }
+                        });
+                    }
                 });
+                this.username='';
+                this.password='';
             },
             logout(){
                 sessionStorage.removeItem('rapiPotra');
@@ -427,6 +445,14 @@
                 console.log(sessionStorage.scope);
                 console.log(sessionStorage.rapiPotra);
                 console.log(this.scope);
+            },
+            localBool(){
+                this.local=true;
+                this.signInButton='';
+            },
+            usuarioBool(){
+                this.local=false;
+                this.signInButton='';
             },
             profileInfo(){
                 
@@ -503,7 +529,12 @@
             });
             console.log(sessionStorage.rapiPotra);
             if(sessionStorage.rapiPotra){
-                this.profileInfo();
+                if(sessionStorage.scope =='regular'){
+                    this.profileInfo();
+                }else{
+
+                }
+                
             }
         }
     }
