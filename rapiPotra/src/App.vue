@@ -380,6 +380,7 @@
     import conversacionService from '../services/conversacion'
     import eventoService from '../services/evento'
     import authService from '../services/auth'
+    import localService from '../services/local'
     import io  from 'socket.io-client';
 
     export default {
@@ -454,6 +455,7 @@
                 console.log(this.scope);
             },
             localBool(){
+
                 this.local=true;
                 this.signInButton='';
             },
@@ -529,11 +531,17 @@
             },
             registrarse(){
                 if(this.local){
+                    localService.createLocal({nombre:this.newLocalNombre, password:this.newLocalPassword,nombreUsuario:this.newLocalUsername,scope:["admin"]}).then(response =>{
+                        console.log("usuario local creado exitosamente");
+                    });
                     console.log("se registro a local");
                     this.newLocalNombre="";
                     this.newLocalPassword="";
                     this.newLocalUsername="";
                 }else{
+                    userService.createUser({nombre:this.newUserNombre,apellido:this.newUserApellido, nombreUsuario:this.newUserUsername,password:this.newUserPassword, scope:["regular"]}).then(response=>{
+                        console.log("se registro un usuario");
+                    });
                     console.log("se registro a usuario normal");
                     this.newUserApellido="";
                     this.newUserNombre="";
