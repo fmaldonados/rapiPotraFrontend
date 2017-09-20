@@ -561,7 +561,7 @@
                         element.mensaje= newMessage.mensajes[newMessage.mensajes.length-1]; 
                     }
                 });
-                const socket = io('http://localhost:8000');
+                const socket = io('https://rapipotra.herokuapp.com/');
                 conversacionService.modifySock("?user1="+sessionStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
                     socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
@@ -591,7 +591,7 @@
             }
         } ,
         beforeMount(){
-            const socket = io('http://localhost:8000',{ forceNew: true });
+            const socket = io('https://rapipotra.herokuapp.com/',{ forceNew: true });
             socket.emit('getMessage','hola');
             socket.on('getMessage',function(val){
                 console.log(val);
