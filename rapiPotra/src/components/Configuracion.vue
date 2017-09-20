@@ -19,18 +19,26 @@
                                                     </div>
                                                     <div class="input-field col s12">
                                                        <i class="material-icons prefix">account_circle</i>
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" type="text"  v-bind:value = "user.nombre" class="validate">
                                                        <label for="username">Nombre</label>
                                                     </div>
                                                     <div class="input-field col s12">
                                                     	<i class="material-icons prefix">face</i>
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" type="text"  v-bind:value = "user.apellido" class="validate">
                                                        <label for="username">Apellido</label>
                                                     </div>
                                                     <div class="input-field col s12">
+                                                      <i class="material-icons prefix">add_circle_outline</i>
+                                                       <input id="username" type="text"  v-bind:value = "user.imagen" class="validate">
+                                                       <label for="username">Imagen</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
                                                     	<i class="material-icons prefix">security</i>
-                                                       <input id="password" type="password" class="validate">
+                                                       <input id="password" type="password"  v-bind:value = "user.contraseña" class="validate">
                                                        <label for="password">Cambiar Contraseña</label>
+                                                    </div>
+                                                    <div class="col s12">
+                                                      <a v-on:click="modificar()" class="waves-effect waves-light btn">button</a>
                                                     </div>
                                                </form>
                                           </div>
@@ -49,7 +57,33 @@ export default {
   name: 'configuracion',
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      user{
+        nombreUsuario:'',
+        nombre: '',
+        apellido: '',
+        contraseña: '',
+        imagen: ''
+      }
+    }
+  },
+  methods{
+    modificar(){
+        eventService.modificarEventos(this.user, "users?nombreUsuario="+this.nombreUsuario).then(response => {
+          
+        }, response => {
+          alert('Error');
+        });
+      }
+  },
+  beforeCreate(){
+    if(sessionStorage.rapiPotra) != undefined){
+      this.nombreUsuario = sessionStorage.rapiPotra;
+      userService.getUsers("users?nombreUsuario="+this.nombreUsuario).then(response => {
+        this.user = response.body[0];
+      },response => {
+        alert('Error');
+      });
     }
   }
 }

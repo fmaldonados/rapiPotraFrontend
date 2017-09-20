@@ -12,4 +12,7 @@ export default{
 	buscarEventos(){
 		return Vue.http.get(url+'eventos');
 	},
+	modificarEventos(){
+		return Vue.http.put(url+'eventos');
+	}
 }
