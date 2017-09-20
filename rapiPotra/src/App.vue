@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <div v-if="scope===''">
-        <div v-if="!signIn">
+    <div v-show="!scope">
+        <div v-show="!signIn">
             <div style="background-image:url('static/images/soccer.gif'); height:662px; opacity: 0.9;">
                 <div class="mn-content valign-wrapper">
                 <main class="mn-inner container" >
@@ -18,16 +18,16 @@
                                            <div class="row">
                                                <form class="col s12">
                                                    <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="username" type="text" class="validate">
                                                        <label for="username">Usuario</label>
                                                    </div>
                                                    <div class="input-field col s12">
-                                                       <input id="password" type="password" class="validate">
+                                                       <input id="password" v-model="password" type="password" class="validate">
                                                        <label for="password">Contraseña</label>
                                                    </div>
                                                    <div class="col s12 right-align m-t-sm">
                                                        <router-link to= '/sign-in'><a v-on:click= "signIn=true" class="waves-effect waves-grey btn-flat">sign up</a></router-link>
-                                                       <a v-on:click = "login()" class="waves-effect waves-light btn teal">sign in</a>
+                                                       <a v-on:click = "login" class="waves-effect waves-light btn teal">sign in</a>
                                                    </div>
                                                </form>
                                           </div>
@@ -40,8 +40,8 @@
             </div>
         </div>
     </div>
-        <div v-else-if="signIn">
-            <div style="background-image:url('static/images/soccer-iloveimg-resized.gif'); height:763px; opacity: 0.9;">
+        <div v-show="signIn">
+            <div style="background-image:url('static/images/soccer-iloveimg-resized.gif'); height:690px; opacity: 0.9;">
                 <div class="mn-content valign-wrapper">
                 <main class="mn-inner container" >
                     <div class="valign">
@@ -56,6 +56,33 @@
                                           <span class="card-title">Sign In</span>
                                            <div class="row">
                                                <form class="col s12">
+                                                    <p>Seleccione</p>
+                                                    <form action="#">
+                                                        <p>
+                                                            <input v-on:click="localBool" name="group1" type="radio" id="test1" checked/>
+                                                            <label for="test1">Local</label>
+                                                        </p>
+                                                        <p>
+                                                            <input v-on:click="usuarioBool" name="group1" type="radio" id="test2" />
+                                                            <label for="test2">Usuario</label>
+                                                        </p>
+                                                    </form>
+                                                    <div v-show="local">
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Nombre Local</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="username" type="text" class="validate">
+                                                       <label for="username">Usuario</label>
+                                                    </div>
+                                                    <div class="input-field col s12">
+                                                       <input id="password" type="password" class="validate">
+                                                       <label for="password">Contraseña</label>
+                                                    </div>
+                                                    </div>
+                                                    
+                                                    <div v-show="!local">
                                                     <div class="input-field col s12">
                                                        <input id="username" type="text" class="validate">
                                                        <label for="username">Nombre</label>
@@ -72,19 +99,9 @@
                                                        <input id="password" type="password" class="validate">
                                                        <label for="password">Contraseña</label>
                                                     </div>
-                                                    <p>Seleccione</p>
-                                                    <form action="#">
-                                                        <p>
-                                                          <input name="group1" type="radio" id="test1" />
-                                                          <label for="test1">Local</label>
-                                                        </p>
-                                                        <p>
-                                                          <input name="group1" type="radio" id="test2" />
-                                                          <label for="test2">Usuario</label>
-                                                        </p>
-                                                    </form>
+                                                    </div>
                                                     <div class="col s12 right-align m-t-sm">
-                                                       <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">sign in</a></router-link>
+                                                       <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">LogIn</a></router-link>
                                                        <a class="waves-effect waves-light btn teal">sign up</a>
                                                     </div>
                                                </form>
@@ -99,7 +116,7 @@
         </div>
     </div>
         </div>
-    <div v-else class="mn-content fixed-sidebar">
+    <div v-show="scope=='regular' " class="mn-content fixed-sidebar">
         <header class="mn-header navbar-fixed">
             <nav class="black">
                 <div class="nav-wrapper row">
@@ -343,9 +360,9 @@
                     <router-link to='/configuracion'>
                     <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">settings</i>Configuracion</a></li>
                     </router-link>
-                    <router-link to='/login'>
-                    <li class="no-padding"><a @click="scope=''" class="waves-effect waves-grey active"><i class="material-icons">exit_to_app</i>Cerrar Sesion</a></li>
-                    </router-link>
+                    
+                    <li class="no-padding"><a v-on:click="logout" class="waves-effect waves-grey active"><i class="material-icons">exit_to_app</i>Cerrar Sesion</a></li>
+                    
                 </ul>
             </div>
         </aside>
@@ -362,74 +379,89 @@
     import userService from '../services/user'
     import conversacionService from '../services/conversacion'
     import eventoService from '../services/evento'
+    import authService from '../services/auth'
+    import io  from 'socket.io-client';
+
     export default {
         name: 'app',
         data () {
             return {
-                user:{
-                    username: '',
-                    password: '',
-                },
+                user:{},
+                username:'',
+                password:'',
                 messages:{},
                 chat:[],
                 msg:"",
-                scope: '',
                 isConnected: false,
                 socketMessage: '',
-                sesiones: [],
-                usuarios: [],
-                signIn: false
+                scope:sessionStorage.scope,
+                signIn:false,
+                
+                local:true
             }
         },
-        sockets: {
-            connect: function(){
-                console.log('2')
-            },
-            getMessage: function(val){
-                console.log(val);
-            }
-        },
+        // sockets: {
+        //     connect: function(){
+        //         console.log('2')
+        //     },
+        //     getMessage: function(val){
+        //         console.log(val);
+        //     }
+        // },
         methods:{
             login(){
-                var bcrypt = require('bcryptjs');
-                this.usuarios = [];
-                userService.getUsers().then(response => {
-                  this.usuarios = response.body;
-                  for(let i = 0; i < this.usuarios.length; i++){
-                    if(this.username === this.usuarios[i].username){
-                      bcrypt.compare(this.password,this.usuarios[i].password,this.verificar);
+	            var body={nombreUsuario:this.username,password:this.password};
+                authService.login(body).then(response=>{
+                    if(response.body !='usuario no existe'){
+                        sessionStorage.rapiPotra= response.body.nombreUsuario;
+                        sessionStorage.scope=response.body.scope[0];
+                        this.scope=response.body.scope[0];
+                        console.log(sessionStorage.scope);
+                        console.log(sessionStorage.rapiPotra);
+                        this.profileInfo();
                     }else{
-                      console.log('Usuario incorrecto');
+                        authService.loginLocal(body).then(response=>{
+                            if(response.body !='usuario no existe'){
+                                // sessionStorage.rapiPotra= response.body.nombreUsuario;
+                                // sessionStorage.scope=response.body.scope[0];
+                                // this.scope=response.body.scope[0];
+                                // console.log(sessionStorage.scope);
+                                // console.log(sessionStorage.rapiPotra);
+                                // this.profileInfo();
+                                console.log("entro a locales");
+                            }else{
+                                console.log("No existe en ninguno");
+                            }
+                        });
                     }
-                  }
-                }, response => {
-                  alert('Error');
                 });
+                this.username='';
+                this.password='';
             },
-            verificar(err,res){
-                if(res){
-                  for(let i = 0; i < this.usuarios.length; i++){
-                    if(this.usuarios[i].username === this.username){
-                      this.scope = 'regular';
-                      localStorage.setItem('scope', 'regular');
-                    }
-                  }
-                }else{
-                  console.log('Contraseña incorrecta');
-                }
+            logout(){
+                sessionStorage.removeItem('rapiPotra');
+                sessionStorage.removeItem('scope');
+                this.scope=sessionStorage.scope;
+                console.log(sessionStorage.scope);
+                console.log(sessionStorage.rapiPotra);
+                console.log(this.scope);
             },
-            cambioSesion(){
-                this.scope = '';
-                localStorage.setItem('scope', '');
+            localBool(){
+                this.local=true;
+                this.signInButton='';
+            },
+            usuarioBool(){
+                this.local=false;
+                this.signInButton='';
             },
             profileInfo(){
-                localStorage.username="felix_em";
-                userService.getUsers("users?nombreUsuario="+localStorage.username).then(response=>{
+                
+                userService.getUsers("users?nombreUsuario="+sessionStorage.rapiPotra).then(response=>{
                     //console.log(response.data[0]);
                     this.user = response.data[0];
                 }); 
                 var chatItems=[];
-                conversacionService.getConversacion("?user1="+localStorage.username).then(response=>{
+                conversacionService.getConversacion("?user1="+sessionStorage.rapiPotra).then(response=>{
                     response.data.forEach(function(element) {
                         userService.getUsers("users?nombreUsuario="+element.user2).then(response=>{
                             var chatItem={
@@ -446,13 +478,13 @@
                 }); 
             },
             pushToChat(id){
-                conversacionService.getConversacion("?user1="+localStorage.username+"&user2="+id).then(response=>{
+                conversacionService.getConversacion("?user1="+sessionStorage.rapiPotra+"&user2="+id).then(response=>{
                     //console.log(response.data[0]);
                     userService.getUsers("users?nombreUsuario="+response.data[0].user2).then(response2=>{
                         
                         this.messages= {nombreUsuario:response2.data[0].nombreUsuario ,nombre: response2.data[0].nombre, imagen:response2.data[0].imagen,apellido:response2.data[0].apellido, messages: response.data[0].mensajes};
                         this.messages.messages.forEach(function(element){
-                            if(element.de == localStorage.username){
+                            if(element.de == sessionStorage.rapiPotra){
                                 element.de="me"
                             }else{
                                 element.de="them"
@@ -469,7 +501,7 @@
                 var otroUsuario= this.messages.nombreUsuario
                 this.messages.messages.forEach(function(element){
                     if(element.de == "me"){
-                        newMessage.mensajes.push({de:localStorage.username,contenido:element.contenido});
+                        newMessage.mensajes.push({de:sessionStorage.rapiPotra,contenido:element.contenido});
                     }else{
                         newMessage.mensajes.push({de:otroUsuario,contenido:element.contenido});
                     }
@@ -479,27 +511,32 @@
                         element.mensaje= newMessage.mensajes[newMessage.mensajes.length-1]; 
                     }
                 });
-                var hilo = this.$socket
-                conversacionService.modifySock("?user1="+localStorage.username+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
-                    hilo.emit('getMessage', {user1:localStorage.username,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                const socket = io('http://localhost:8000');
+                conversacionService.modifySock("?user1="+sessionStorage.rapiPotra+"&user2="+this.messages.nombreUsuario,newMessage).then(function(){
+                    socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
+                });
+                conversacionService.modifySock("?user2="+sessionStorage.rapiPotra+"&user1="+this.messages.nombreUsuario,newMessage).then(function(){
+                    socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
             },
             
-        },
+        } ,
         beforeMount(){
-            this.profileInfo();
-        },
-         beforeCreate(){
-            userService.getUsers().then(response =>{
-            for(let i = 0; i < response.body.length; i++){
-                this.usuarios.push(response.body[i]);
+            const socket = io('http://localhost:8000',{ forceNew: true });
+            socket.emit('getMessage','hola');
+            socket.on('getMessage',function(val){
+                console.log(val);
+            });
+            console.log(sessionStorage.rapiPotra);
+            if(sessionStorage.rapiPotra){
+                if(sessionStorage.scope =='regular'){
+                    this.profileInfo();
+                }else{
+
+                }
+                
             }
-            this.scope = '';
-            localStorage.setItem('scope','');
-            }, response =>{
-            alert('Bienvenido!');
-        });
-  }
+        }
     }
 </script>
   

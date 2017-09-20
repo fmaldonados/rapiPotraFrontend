@@ -1,5 +1,5 @@
 <template>
-	<div id="configuracion">
+	<div id="configuracion-local">
 		<div class="mn-content valign-wrapper">
                 <main class="mn-inner container" >
                     <div class="valign">
