@@ -372,6 +372,46 @@
             </div>
         </main>
     </div>
+    <div v-show="scope=='admin' " class="mn-content fixed-sidebar">
+        <header class="mn-header navbar-fixed">
+            <nav class="black">
+                <div class="nav-wrapper row">
+                    <section class="material-design-hamburger navigation-toggle">
+                        <a href="javascript:void(0)" data-activates="slide-out" class="show-on-large material-design-hamburger__icon reverse-icon"><span class="material-design-hamburger__layer"></span></a>
+                    </section>
+                    <div class="header-title col s3 m3"><span class="chapter-title">Rapi Potra</span></div>
+                </div>
+            </nav>
+        </header>
+        <aside id="slide-out" class="side-nav white fixed">
+            <div class="side-nav-wrapper">
+                <div class="sidebar-profile">
+                    <div class="sidebar-profile-image"><img src='' alt="" class="circle"></div>
+                    <div class="sidebar-profile-info">
+                        <p>x</p> <span>x</span></div>
+                </div>
+                <ul data-collapsible="accordion" class="sidebar-menu collapsible collapsible-accordion">
+                    <router-link to='/perfil'>
+                        <li class="no-padding active"><a class="waves-effect waves-grey active"><i class="material-icons">home</i>Perfil</a></li>
+                    </router-link>
+                    <router-link to='/eventos'>
+                    <li class="no-padding"><a class="waves-effect waves-grey active"><i aria-hidden="true" class="fa fa-futbol-o material-icons"></i>Eventos</a></li>
+                    </router-link>
+                    <router-link to='/configuracion'>
+                    <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">settings</i>Configuracion</a></li>
+                    </router-link>
+                    
+                    <li class="no-padding"><a v-on:click="logout" class="waves-effect waves-grey active"><i class="material-icons">exit_to_app</i>Cerrar Sesion</a></li>
+                    
+                </ul>
+            </div>
+        </aside>
+        <main class="mn-inner inner-active-sidebar">
+            <div class="middle-content" >
+            <router-view></router-view>        
+            </div>
+        </main>
+    </div>
 </div>
 </template>
 
@@ -380,6 +420,7 @@
     import conversacionService from '../services/conversacion'
     import eventoService from '../services/evento'
     import authService from '../services/auth'
+    import localService from '../services/local'
     import io  from 'socket.io-client';
 
     export default {
@@ -428,11 +469,11 @@
                     }else{
                         authService.loginLocal(body).then(response=>{
                             if(response.body !='usuario no existe'){
-                                // sessionStorage.rapiPotra= response.body.nombreUsuario;
-                                // sessionStorage.scope=response.body.scope[0];
-                                // this.scope=response.body.scope[0];
-                                // console.log(sessionStorage.scope);
-                                // console.log(sessionStorage.rapiPotra);
+                                sessionStorage.rapiPotra= response.body.nombreUsuario;
+                                sessionStorage.scope=response.body.scope[0];
+                                this.scope=response.body.scope[0];
+                                console.log(sessionStorage.scope);
+                                console.log(sessionStorage.rapiPotra);
                                 // this.profileInfo();
                                 console.log("entro a locales");
                             }else{
@@ -454,6 +495,7 @@
                 console.log(this.scope);
             },
             localBool(){
+
                 this.local=true;
                 this.signInButton='';
             },
@@ -529,11 +571,17 @@
             },
             registrarse(){
                 if(this.local){
+                    localService.createLocal({nombre:this.newLocalNombre, password:this.newLocalPassword,nombreUsuario:this.newLocalUsername,scope:["admin"]}).then(response =>{
+                        console.log("usuario local creado exitosamente");
+                    });
                     console.log("se registro a local");
                     this.newLocalNombre="";
                     this.newLocalPassword="";
                     this.newLocalUsername="";
                 }else{
+                    userService.createUser({nombre:this.newUserNombre,apellido:this.newUserApellido, nombreUsuario:this.newUserUsername,password:this.newUserPassword, scope:["regular"]}).then(response=>{
+                        console.log("se registro un usuario");
+                    });
                     console.log("se registro a usuario normal");
                     this.newUserApellido="";
                     this.newUserNombre="";
