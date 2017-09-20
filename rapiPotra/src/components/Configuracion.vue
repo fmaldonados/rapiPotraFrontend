@@ -58,7 +58,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      user{
+      user: {
         nombreUsuario:'',
         nombre: '',
         apellido: '',
@@ -67,7 +67,7 @@ export default {
       }
     }
   },
-  methods{
+  methods: {
     modificar(){
         eventService.modificarEventos(this.user, "users?nombreUsuario="+this.nombreUsuario).then(response => {
           
