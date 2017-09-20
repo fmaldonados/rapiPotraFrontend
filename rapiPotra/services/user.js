@@ -10,5 +10,9 @@ export default{
 	},
 	createUser(body){
 		return Vue.http.post('http://localhost:8000/createUser',body);
+	},
+	modifyUsers(params,payload){
+		console.log(payload);
+		return Vue.http.put(url+params,payload);
 	}
 }

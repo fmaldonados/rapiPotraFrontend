@@ -16,7 +16,25 @@
 			<div class="col s12 m12 l12 xs12">
 				<div v-show="tipo==='creado'">
 					<div>
-					    <h1>1</h1>
+					    <div class="row">
+					        <div class="row">
+						        <div class="col s12 m7">
+						          <div class="card">
+						            <div class="card-image">
+						              <img src="images/sample-1.jpg">
+						              <span class="card-title">Card Title</span>
+						            </div>
+						            <div class="card-content">
+						              <p>I am a very simple card. I am good at containing small bits of information.
+						              I am convenient because I require little markup to use effectively.</p>
+						            </div>
+						            <div class="card-action">
+						              <a href="#">This is a link</a>
+						            </div>
+						          </div>
+						        </div>
+						      </div>
+						  </div>
 					</div>
 				</div>
 			</div>
@@ -125,8 +143,8 @@
 	</div>
 </template>
 <script>
-import eventoService from './../services/evento'
-import userService from '../services/user'
+import eventoService from '../../services/evento'
+import userService from '../../services/user'
 export default {
   name: 'eventos',
   data () {
@@ -134,7 +152,10 @@ export default {
       msg: 'Welcome to Your Vue.js App',
       tipo: 'agregado',
       user: {},
-      eventos: [],
+      eventos: [], 
+      eventosCreados: [],
+      eventosAceptados: [],
+      eventosInvitaciones: [],
       evento: {
       	nombre:'',
       	fecha: '',
@@ -152,30 +173,19 @@ export default {
       },
       nombreUsuario: String
     }
+  },methods:{
+  	crearEvento(){
+
+  	},
+  	modificarEvento(){
+
+  	},
+  	eliminarEvento(){
+
+  	}
   },
 	beforeCreate(){
-		if(sessionStorage.getItem('NombreUsuario') != undefined){
-			this.nombreUsuario = sessionStorage.getItem('NombreUsuario');
-			userService.getUsers("users?nombreUsuario="+this.nombreUsuario).then(response => {
-				this.user = response.body[0];
-				for(let i = 0; i < this.user.eventosCreados.length; i++){
-					eventoService.buscarEventoNombre(this.user.eventosCreados[i]).then(response =>{
-						this.evento.push(response.body[0]);
-					}, response => {
-						alert('Error');
-					} )
-				}
-				for(let i = 0; i < this.user.eventosInvitaciones.length; i++){
-					eventoService.buscarEventoNombre(this.user.eventosInvitaciones[i]).then(response =>{
-						this.evento.push(response.body[0]);
-					}, response => {
-						alert('Error');
-					} )
-				}
-			},response => {
-				alert('Error');
-			});
-		}
+		
 	}
 }
 </script>
