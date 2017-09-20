@@ -127,4 +127,4 @@ export default {
     }
     var map = new google.maps.Map(document.getElementById("mapa"),opciones);
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?callback=miMapa"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDr8cOOhMh87gv1XDQLFSor-HlUNwNqEo&callback=miMapa"></script>

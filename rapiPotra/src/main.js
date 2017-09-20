@@ -4,6 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
 import inicio from './components/inicio.vue'
+import eventos from './components/eventos.vue'
+import configuracion from './components/configuracion.vue'
 import Pastrana from './components/Pastrana.vue'
 import Login from './components/Login.vue'
 import socketio from 'socket.io-client';
@@ -23,7 +25,7 @@ const router = new VueRouter({
     },{
         path:'/eventos',
         name: 'eventos',
-        component: Pastrana
+        component: eventos
     },{
         path:'/amigos',
         name: 'amigos',
@@ -31,7 +33,7 @@ const router = new VueRouter({
     },{
         path:'/configuracion',
         name: 'configuracion',
-        component: Pastrana
+        component: configuracion
     },{
         path:'/login',
         name: 'login',
