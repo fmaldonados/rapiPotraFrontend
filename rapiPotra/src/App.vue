@@ -391,14 +391,11 @@
                         <p>x</p> <span>x</span></div>
                 </div>
                 <ul data-collapsible="accordion" class="sidebar-menu collapsible collapsible-accordion">
-                    <router-link to='/inicio'>
-                        <li class="no-padding active"><a class="waves-effect waves-grey active"><i class="material-icons">home</i>Inicio</a></li>
+                    <router-link to='/perfil'>
+                        <li class="no-padding active"><a class="waves-effect waves-grey active"><i class="material-icons">home</i>Perfil</a></li>
                     </router-link>
                     <router-link to='/eventos'>
                     <li class="no-padding"><a class="waves-effect waves-grey active"><i aria-hidden="true" class="fa fa-futbol-o material-icons"></i>Eventos</a></li>
-                    </router-link>
-                    <router-link to='/amigos'>
-                    <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">group</i>Amigos</a></li>
                     </router-link>
                     <router-link to='/configuracion'>
                     <li class="no-padding"><a class="waves-effect waves-grey active"><i class="material-icons">settings</i>Configuracion</a></li>
