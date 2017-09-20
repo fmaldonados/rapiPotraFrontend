@@ -4,16 +4,14 @@ import Vue from 'vue'
 import App from './App'
 import VueRouter from 'vue-router'
 import inicio from './components/inicio.vue'
-import configuracion from './components/Configuracion.vue'
-import eventos from './components/Eventos.vue'
 import Pastrana from './components/Pastrana.vue'
 import Login from './components/Login.vue'
 import socketio from 'socket.io-client';
 import VueSocketIO from 'vue-socket.io';
 
-export const SocketInstance = socketio('http://localhost:8000');
+//export const SocketInstance = socketio('http://localhost:8000');
 
-Vue.use(VueSocketIO, SocketInstance)
+//Vue.use(VueSocketIO, SocketInstance)
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
@@ -25,7 +23,7 @@ const router = new VueRouter({
     },{
         path:'/eventos',
         name: 'eventos',
-        component: eventos
+        component: Pastrana
     },{
         path:'/amigos',
         name: 'amigos',
@@ -33,7 +31,7 @@ const router = new VueRouter({
     },{
         path:'/configuracion',
         name: 'configuracion',
-        component: configuracion
+        component: Pastrana
     },{
         path:'/login',
         name: 'login',
