@@ -481,6 +481,7 @@
                         });
                     });
                     this.chat = chatItems;
+                    console.log();
                 }); 
             },
             pushToChat(id){

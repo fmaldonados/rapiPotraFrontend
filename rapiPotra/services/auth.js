@@ -8,12 +8,9 @@ export default{
 	login(body){
 		return Vue.http.post(url+"login",body);
 	},
-<<<<<<< HEAD
 	loginLocal(body){
 		return Vue.http.post(url+"loginLocal",body);
 	},
-=======
->>>>>>> esta fallando el socket
 	logout(){
 		return Vue.http.get(url+"logout");
 	}
