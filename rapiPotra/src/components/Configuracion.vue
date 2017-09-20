@@ -7,7 +7,7 @@
                               <div class="col s12 m6 l4 offset-l4 offset-m3">
                                   <div class="card white darken-1">
                                       <div class="card-content ">
-                                          <span class="card-title">Sign In</span>
+                                          <span class="card-title">Configurar</span>
                                            <div class="row">
                                                <form class="col s12">
                                                     <div class="input-field col s12">
@@ -31,9 +31,6 @@
                                                     	<i class="material-icons prefix">security</i>
                                                        <input id="password" type="password" class="validate">
                                                        <label for="password">Cambiar Contraseña</label>
-                                                    </div>
-                                                    <div class="col s12">
-                                                    	<a class="waves-effect waves-light btn red">Eliminar Cuenta</a>
                                                     </div>
                                                </form>
                                           </div>

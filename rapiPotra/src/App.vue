@@ -26,8 +26,8 @@
                                                        <label for="password">Contraseña</label>
                                                    </div>
                                                    <div class="col s12 right-align m-t-sm">
-                                                       <router-link to= '/sign-in'><a v-on:click= "signIn=true" class="waves-effect waves-grey btn-flat">sign up</a></router-link>
-                                                       <a v-on:click = "login()" class="waves-effect waves-light btn teal">sign in</a>
+                                                       <router-link to= '/inicio'><a v-on:click= "signIn=true" class="waves-effect waves-grey btn-flat">sign up</a></router-link>
+                                                       <a v-on:click = "scope='regular'" class="waves-effect waves-light btn teal">sign in</a>
                                                    </div>
                                                </form>
                                           </div>
