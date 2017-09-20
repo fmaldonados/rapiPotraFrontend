@@ -69,40 +69,40 @@
                                                     </form>
                                                     <div v-show="local">
                                                     <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="newLocalNombre" type="text" class="validate">
                                                        <label for="username">Nombre Local</label>
                                                     </div>
                                                     <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="newLocalUsername" type="text" class="validate">
                                                        <label for="username">Usuario</label>
                                                     </div>
                                                     <div class="input-field col s12">
-                                                       <input id="password" type="password" class="validate">
+                                                       <input id="password" v-model="newLocalPassword" type="password" class="validate">
                                                        <label for="password">Contraseña</label>
                                                     </div>
                                                     </div>
                                                     
                                                     <div v-show="!local">
                                                     <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="newUserNombre" type="text" class="validate">
                                                        <label for="username">Nombre</label>
                                                     </div>
                                                     <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="newUserApellido" type="text" class="validate">
                                                        <label for="username">Apellido</label>
                                                     </div>
                                                     <div class="input-field col s12">
-                                                       <input id="username" type="text" class="validate">
+                                                       <input id="username" v-model="newUserUsername" type="text" class="validate">
                                                        <label for="username">Usuario</label>
                                                     </div>
                                                     <div class="input-field col s12">
-                                                       <input id="password" type="password" class="validate">
+                                                       <input id="password" v-model="newUserPassword" type="password" class="validate">
                                                        <label for="password">Contraseña</label>
                                                     </div>
                                                     </div>
                                                     <div class="col s12 right-align m-t-sm">
                                                        <router-link to= '/login'><a v-on:click= "signIn=false" class="waves-effect waves-grey btn-flat">LogIn</a></router-link>
-                                                       <a class="waves-effect waves-light btn teal">sign up</a>
+                                                       <a class="waves-effect waves-light btn teal" v-on:click="registrarse">sign up</a>
                                                     </div>
                                                </form>
                                           </div>
@@ -396,7 +396,13 @@
                 socketMessage: '',
                 scope:sessionStorage.scope,
                 signIn:false,
-                
+                newLocalNombre:'',
+                newLocalPassword:'',
+                newLocalUsername:'',
+                newUserApellido:'',
+                newUserNombre:'',
+                newUserPassword:'',
+                newUserUsername:'',
                 local:true
             }
         },
@@ -519,7 +525,20 @@
                     socket.emit('getMessage', {user1:sessionStorage.rapiPotra,user2:otroUsuario,mensaje: newMessage.mensajes[newMessage.mensajes.length-1].contenido});
                 });
             },
-            
+            registrarse(){
+                if(this.local){
+                    console.log("se registro a local");
+                    this.newLocalNombre="";
+                    this.newLocalPassword="";
+                    this.newLocalUsername="";
+                }else{
+                    console.log("se registro a usuario normal");
+                    this.newUserApellido="";
+                    this.newUserNombre="";
+                    this.newUserPassword="";
+                    this.newUserUsername="";
+                }
+            }
         } ,
         beforeMount(){
             const socket = io('http://localhost:8000',{ forceNew: true });
