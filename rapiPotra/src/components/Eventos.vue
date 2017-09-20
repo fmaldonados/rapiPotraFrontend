@@ -46,6 +46,7 @@
 						          <label for="first_name">Nombre</label>
 						        </div>
 						      </div>
+						  </form>
 						       <form class="col s12">
 						      <div class="row">
 						        <div class="input-field col s6">
@@ -131,7 +132,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      tipo: 'agregado'
+      tipo: 'agregado',
       user: {},
       eventos: [],
       evento: {
@@ -148,7 +149,7 @@ export default {
       	resultado1 : '',
   		resultado2 : '',
   		resultadoGanador: ''
-      }
+      },
       nombreUsuario: String
     }
   },
